@@ -2,8 +2,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: elasticsearch
-  labels:
-    app: elasticsearch
 spec:
   selector:
     app: elasticsearch
