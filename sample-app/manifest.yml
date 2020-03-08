@@ -1,0 +1,9 @@
+---
+applications:
+- name: smalik-sample-logging
+  memory: 1G
+  path: build/libs/logging-1.0.jar
+  buildpacks:
+  - java_buildpack
+  services:
+  - sample-syslog
