@@ -23,6 +23,7 @@ data:
           kv {
             prefix => "tags_"
             source => "syslog5424_sd"
+            remove_char_value => "\[\]\""
           }
         }
       }
