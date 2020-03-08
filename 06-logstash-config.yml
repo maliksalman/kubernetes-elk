@@ -16,8 +16,14 @@ data:
         grok {
           match => { "message" => "%{SYSLOG5424PRI}%{NONNEGINT:syslog5424_ver} +(?:%{TIMESTAMP_ISO8601:syslog5424_ts}|-) +(?:%{HOSTNAME:syslog5424_host}|-) +(?:%{NOTSPACE:syslog5424_app}|-) +(?:%{NOTSPACE:syslog5424_proc}|-) +(?:%{WORD:syslog5424_msgid}|-) +(?:%{SYSLOG5424SD:syslog5424_sd}|-|) +%{GREEDYDATA:syslog5424_msg}" }
         }
-        date {
-          match => [ "syslog5424_ts", "ISO8601" ]
+        if !("_grokparsefailure" in [tags]) {
+          date {
+            match => [ "syslog5424_ts", "ISO8601" ]
+          }
+          kv {
+            prefix => "tags_"
+            source => "syslog5424_sd"
+          }
         }
       }
     }
