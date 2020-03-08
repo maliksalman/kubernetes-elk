@@ -36,11 +36,6 @@ data:
             }
           }
           if [cf_source] in ["API, "RTR", "APP/PROC/WEB"] {
-            if [cf_source] == "API" {
-              mutate {
-                remove_field => { "cf_instance" }
-              }
-            }
             json {
               source => "raw"
               skip_on_invalid_json => true
