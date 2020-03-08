@@ -21,12 +21,12 @@ data:
             match => [ "syslog5424_ts", "ISO8601" ]
           }
           mutate {
-            replace => { "message" => "%{syslog5424_msg}" }
+            replace => { "msg" => "%{syslog5424_msg}" }
           }
           kv {
+            remove_char_value => "\[\]\\\""
             prefix => "tags_"
             source => "syslog5424_sd"
-            remove_char_value => "\[\]\""
           }
         }
       }
