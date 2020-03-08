@@ -32,11 +32,11 @@ data:
               "cf_app" => "%{tags_app_name}"
               "cf_app_instance" => "%{tags_instance_id}"
               "cf_source" => "%{tags_source_type}"
-              "msg" => "%{syslog5424_msg}"
+              "raw" => "%{syslog5424_msg}"
             }
           }
           prune {
-            blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$" ]
+            blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$", "^type$", "^@version$" ]
           }
         }
       }
