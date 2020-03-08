@@ -26,12 +26,14 @@ data:
             source => "syslog5424_sd"
           }
           mutate {
-            replace => { "cf_org" => "%{tags_organization_name}" }
-            replace => { "cf_space" => "%{tags_space_name}" }
-            replace => { "cf_app" => "%{tags_app_name}" }
-            replace => { "cf_app_instance" => "%{tags_instance_id}" }
-            replace => { "cf_source" => "%{tags_source_type}" }
-            replace => { "msg" => "%{syslog5424_msg}" }
+            add_field => {
+              "cf_org" => "%{tags_organization_name}"
+              "cf_space" => "%{tags_space_name}"
+              "cf_app" => "%{tags_app_name}"
+              "cf_app_instance" => "%{tags_instance_id}"
+              "cf_source" => "%{tags_source_type}"
+              "msg" => "%{syslog5424_msg}"
+            }
           }
           prune {
             blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$" ]
