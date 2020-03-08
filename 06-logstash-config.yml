@@ -34,7 +34,7 @@ data:
             replace => { "msg" => "%{syslog5424_msg}" }
           }
           prune {
-            whitelist_names => [ "^cf_", "^msg$" ]
+            blacklist_names => [ "^syslog5424_", "^tags_" ]
           }
         }
       }
