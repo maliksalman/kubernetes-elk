@@ -35,6 +35,11 @@ data:
               "raw" => "%{syslog5424_msg}"
             }
           }
+          json {
+            source => "raw"
+            skip_on_invalid_json => true
+            target => "parsed"
+          }
           prune {
             blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$", "^type$", "^@version$" ]
           }
