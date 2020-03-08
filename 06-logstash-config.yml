@@ -35,7 +35,12 @@ data:
               "raw" => "%{syslog5424_msg}"
             }
           }
-          if [cf_source] in ["RTR", "APP/PROC/WEB"] {
+          if [cf_source] in ["API, "RTR", "APP/PROC/WEB"] {
+            if [cf_source] == "API" {
+              mutate {
+                remove_field => { "cf_instance" }
+              }
+            }
             json {
               source => "raw"
               skip_on_invalid_json => true
@@ -44,6 +49,8 @@ data:
             prune {
               blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$", "^type$", "^@version$" ]
             }
+          } else {
+            drop { }
           }
         }
       }
