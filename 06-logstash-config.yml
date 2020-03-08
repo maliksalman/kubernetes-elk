@@ -37,7 +37,6 @@ data:
           }
           json {
             source => "raw"
-            skip_on_invalid_json => true
             target => "parsed"
           }
           prune {
