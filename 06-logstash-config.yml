@@ -38,7 +38,7 @@ data:
           if [cf_source] in ["API", "RTR", "APP/PROC/WEB"] {
             if [cf_source] == "API" {
               mutate {
-                remove_field => [ "cf_instance" ]
+                remove_field => [ "cf_app_instance" ]
               }
             }
             json {
