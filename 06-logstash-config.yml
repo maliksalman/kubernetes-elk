@@ -26,12 +26,12 @@ data:
             source => "syslog5424_sd"
           }
           mutate {
-            copy => { "syslog5424_msg" => "message" }
-            copy => { "tags_origanization_name" => "cf_org" }
-            copy => { "tags_space_name" => "cf_space" }
-            copy => { "tags_app_name" => "cf_app" }
-            copy => { "tags_instance_id" => "cf_app_instance" }
-            copy => { "syslog5424_msg" => "msg" }
+            replace => { "message" => "%{syslog5424_msg}" }
+            replace => { "cf_org" => "%{tags_origanization_name}" }
+            replace => { "cf_space" => "%{tags_space_name}" }
+            replace => { "cf_app" => "%{tags_app_name}" }
+            replace => { "cf_app_instance" => "%{tags_instance_id}" }
+            replace => { "msg" => "%{syslog5424_msg}" }
           }
         }
       }
