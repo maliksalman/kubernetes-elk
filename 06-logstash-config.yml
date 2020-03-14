@@ -52,7 +52,7 @@ data:
               json {
                 source => "msg"
                 skip_on_invalid_json => true
-                target => "parsed"
+                target => "app"
                 remove_field => [ "msg" ]
               }
               de_dot { }
