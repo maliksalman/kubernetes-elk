@@ -60,7 +60,7 @@ spec:
             - name: filebeat-config
               mountPath: /usr/share/filebeat
       volumes:
-        - name: logs
+        - name: logz
           emptyDir: { }
         - name: filebeat-config
           configMap:
