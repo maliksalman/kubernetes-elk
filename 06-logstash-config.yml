@@ -9,6 +9,9 @@ data:
         port => 5044
         type => syslog
       }
+      beats {
+        port => 5045
+      }
     }
 
     filter {

@@ -11,6 +11,10 @@ spec:
       protocol: TCP
       port: 5044
       nodePort: 30044
+    - name: beat
+      protocol: TCP
+      port: 5045
+      nodePort: 30045
     - name: api
       protocol: TCP
       port: 9600

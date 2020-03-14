@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-with-filebeat
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-with-filebeat
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  config.yml: |
+    filebeat:
+      inputs:
+      - type: log
+        paths: /var/log/spring.log
+    output:
+      logstash:
+        hosts: ["logstash:5045"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-filebeat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-with-filebeat
+  template:
+    metadata:
+      labels:
+        app: app-with-filebeat
+    spec:
+      containers:
+        - name: app
+          image: sample/app:1.0
+          env:
+            - name: LOGGING_FILE_PATH
+              value: /var/log
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 8080
+          volumeMounts:
+            - name: logz
+              mountPath: /var/log
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat-oss:7.6.1
+          volumeMounts:
+            - name: logz
+              mountPath: /var/log
+            - name: filebeat-config
+              mountPath: /usr/share/filebeat
+      volumes:
+        - name: logs
+          emptyDir: { }
+        - name: filebeat-config
+          configMap:
+            name: filebeat-config
+
