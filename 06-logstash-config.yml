@@ -14,6 +14,7 @@ data:
     filter {
       if [type] == "syslog" {
         grok {
+          id => "syslog"
           match => { "message" => "%{SYSLOG5424PRI}%{NONNEGINT:syslog5424_ver} +(?:%{TIMESTAMP_ISO8601:syslog5424_ts}|-) +(?:%{HOSTNAME:syslog5424_host}|-) +(?:%{NOTSPACE:syslog5424_app}|-) +(?:%{NOTSPACE:syslog5424_proc}|-) +(?:%{WORD:syslog5424_msgid}|-) +(?:%{SYSLOG5424SD:syslog5424_sd}|-|) +%{GREEDYDATA:syslog5424_msg}" }
         }
         if !("_grokparsefailure" in [tags]) {
@@ -32,7 +33,7 @@ data:
               "cf_app" => "%{tags_app_name}"
               "cf_app_instance" => "%{tags_instance_id}"
               "cf_source" => "%{tags_source_type}"
-              "raw" => "%{syslog5424_msg}"
+              "msg" => "%{syslog5424_msg}"
             }
           }
           if [cf_source] in ["API", "RTR", "APP/PROC/WEB"] {
@@ -42,15 +43,19 @@ data:
               }
             } else if [cf_source] == "RTR" {
               grok {
+                id => "rtr"
                 named_captures_only => true
-                match => { "raw" => "%{HOSTNAME} - \[%{TIMESTAMP_ISO8601}\] \"(?:%{WORD:web_verb} %{NOTSPACE:web_request}(?: HTTP/%{NUMBER:web_httpversion})?|%{DATA})\" %{NUMBER:web_response} %{NUMBER} %{NUMBER} %{QS} %{QS:web_agent} %{GREEDYDATA}" }
+                match => { "msg" => "%{HOSTNAME} - \[%{TIMESTAMP_ISO8601}\] \"(?:%{WORD:web_verb} %{NOTSPACE:web_request}(?: HTTP/%{NUMBER:web_httpversion})?|%{DATA})\" %{NUMBER:web_response} %{NUMBER} %{NUMBER} %{QS} %{QS:web_agent} %{GREEDYDATA}" }
+                remove_field => [ "msg" ]
               }
             } else {
               json {
-                source => "raw"
+                source => "msg"
                 skip_on_invalid_json => true
                 target => "parsed"
+                remove_field => [ "msg" ]
               }
+              de_dot { }
             }
 
             prune {
