@@ -55,7 +55,9 @@ data:
                 target => "app"
                 remove_field => [ "msg" ]
               }
-              de_dot { }
+              de_dot {
+                fields = [ "app.level", "app.message", "app.thread", "app.logger" ]
+              }
             }
 
             prune {
