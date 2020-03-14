@@ -54,10 +54,10 @@ data:
                 skip_on_invalid_json => true
                 target => "app"
                 add_field => {
-                  "app_thread" => "%{app.thread}"
-                  "app_logger" => "%{app.logger}"
-                  "app_message" => "%{app.message}"
-                  "app_level" => "%{app.level}"
+                  "app_thread" => "%{app[thread]}"
+                  "app_logger" => "%{app[logger]}"
+                  "app_message" => "%{app[message]}"
+                  "app_level" => "%{app[level]}"
                 }
               }
               mutate {
