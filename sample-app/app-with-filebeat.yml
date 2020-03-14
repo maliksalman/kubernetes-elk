@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-config
+  name: filebeat
 data:
   config.yml: |
     filebeat.inputs:
@@ -55,12 +55,12 @@ spec:
           volumeMounts:
             - name: logz
               mountPath: /var/log
-            - name: filebeat-config
+            - name: config
               mountPath: /usr/share/filebeat
       volumes:
         - name: logz
           emptyDir: { }
-        - name: filebeat-config
+        - name: config
           configMap:
-            name: filebeat-config
+            name: filebeat
 
