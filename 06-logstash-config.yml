@@ -40,12 +40,19 @@ data:
               mutate {
                 remove_field => [ "cf_app_instance" ]
               }
+            } else if [cf_source] == "RTR" {
+              grok {
+                named_captures_only => true
+                match => { "raw" => "%{HOSTNAME} - \[%{TIMESTAMP_ISO8601}\] \"(?:%{WORD:web_verb} %{NOTSPACE:web_request}(?: HTTP/%{NUMBER:web_httpversion})?|%{DATA})\" %{NUMBER:web_response} %{NUMBER} %{NUMBER} %{QS} %{QS:web_agent} %{GREEDYDATA}" }
+              }
+            } else {
+              json {
+                source => "raw"
+                skip_on_invalid_json => true
+                target => "parsed"
+              }
             }
-            json {
-              source => "raw"
-              skip_on_invalid_json => true
-              target => "parsed"
-            }
+
             prune {
               blacklist_names => [ "^syslog5424_", "^tags_", "^host$", "^port$", "^message$", "^type$", "^@version$" ]
             }
