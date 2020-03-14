@@ -52,6 +52,9 @@ spec:
               mountPath: /var/log
         - name: filebeat
           image: docker.elastic.co/beats/filebeat-oss:7.6.1
+          command:
+            - sleep
+            - 2h
           volumeMounts:
             - name: logz
               mountPath: /var/log
