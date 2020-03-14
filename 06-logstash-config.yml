@@ -53,10 +53,13 @@ data:
                 source => "msg"
                 skip_on_invalid_json => true
                 target => "app"
-                remove_field => [ "msg" ]
-              }
-              de_dot {
-                fields => [ "app.level", "app.message", "app.thread", "app.logger" ]
+                add_field => {
+                  "app_thread" => "%{app.thread}"
+                  "app_logger" => "%{app.logger}"
+                  "app_message" => "%{app.message}"
+                  "app_level" => "%{app.level}"
+                }
+                remove_field => [ "msg", "app" ]
               }
             }
 
