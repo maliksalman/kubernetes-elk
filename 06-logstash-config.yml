@@ -16,6 +16,7 @@ data:
 
     filter {
       if [type] == "syslog" {
+        mutate { add_field => { "index_type" => "pcf" } }
         grok {
           id => "syslog"
           match => { "message" => "%{SYSLOG5424PRI}%{NONNEGINT:syslog5424_ver} +(?:%{TIMESTAMP_ISO8601:syslog5424_ts}|-) +(?:%{HOSTNAME:syslog5424_host}|-) +(?:%{NOTSPACE:syslog5424_app}|-) +(?:%{NOTSPACE:syslog5424_proc}|-) +(?:%{WORD:syslog5424_msgid}|-) +(?:%{SYSLOG5424SD:syslog5424_sd}|-|) +%{GREEDYDATA:syslog5424_msg}" }
@@ -79,10 +80,48 @@ data:
           }
         }
       }
+
+      if [@metadata][beat] == "filebeat" {
+        mutate { add_field => { "index_type" => "k8s" } }
+        json {
+          source => "message"
+          target => "app"
+        }
+        if !("_jsonparsefailure" in [tags]) {
+          mutate {
+            add_field => {
+              "app_thread" => "%{[app][thread]}"
+              "app_logger" => "%{[app][logger]}"
+              "app_message" => "%{[app][message]}"
+              "app_level" => "%{[app][level]}"
+            }
+          }
+          mutate {
+            remove_field => [ "msg", "app" ]
+          }
+        } else {
+          mutate {
+            add_field => {
+              "msg" => "%{[message]}"
+            }
+          }
+        }
+        mutate {
+          add_field => {
+            app_instance => "%{[agent][hostname]}"
+            app_name => "%{[fields][app_name]}"
+            app_namespace => "%{[fields][app_namespace]}"
+          }
+        }
+        mutate {
+          remove_field => [ "fields", "app", "ecs", "agent", "tags", "message", "log", "host", "input" ]
+        }
+      }
     }
 
     output {
       elasticsearch {
         hosts => ["elasticsearch:9200"]
+        index => "logstash-%{index_type}-%{+YYYY.MM.dd}"
       }
     }

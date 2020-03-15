@@ -20,6 +20,9 @@ data:
     filebeat.inputs:
       - type: log
         paths: /var/log/spring.log
+        fields:
+          app_name: app-with-filebeat
+          app_namespace: default
     output.logstash:
         hosts: ["logstash:5045"]
 ---
@@ -52,18 +55,18 @@ spec:
               mountPath: /var/log
         - name: filebeat
           image: docker.elastic.co/beats/filebeat-oss:7.6.1
-          command:
-            - sleep
-            - 2h
+          args:
+            - "-c"
+            - "/etc/filebeat/config.yml"
+            - "-e"
           volumeMounts:
             - name: logz
               mountPath: /var/log
             - name: config
-              mountPath: /usr/share/filebeat
+              mountPath: /etc/filebeat
       volumes:
         - name: logz
           emptyDir: { }
         - name: config
           configMap:
             name: filebeat
-
