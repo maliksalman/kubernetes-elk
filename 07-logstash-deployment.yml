@@ -29,3 +29,6 @@ spec:
         - name: logstash-config
           configMap:
             name: logstash
+            items:
+              - key: main.conf
+                path: main.conf

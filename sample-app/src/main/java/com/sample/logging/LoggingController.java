@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 public class LoggingController {
 
@@ -17,14 +20,16 @@ public class LoggingController {
     }
 
     @GetMapping("/person")
-    public void generatePerson() {
+    public Person generatePerson() {
         Person person = generator.generate();
         LOGGER.info("Person: Name=[{}] City=[{}] Age=[{}]", person.getName(), person.getCity(), person.getAge());
+        return person;
     }
 
     @GetMapping("/exception")
-    public void generateException() {
+    public void generateException(HttpServletResponse response) throws IOException {
         Person person = generator.generate();
         LOGGER.error("Error while generating person: ", new RuntimeException(String.format("Name=[%s]", person.getName())));
+        response.sendError(500);
     }
 }

@@ -3,7 +3,29 @@ kind: ConfigMap
 metadata:
   name: logstash
 data:
-  syslog.conf: |
+  starter.conf: |
+    input {
+      tcp {
+        port => 5044
+        type => syslog
+      }
+    }
+
+    filter {
+      if [type] == "syslog" {
+        grok {
+          match => { "message" => "%{SYSLOG5424PRI}%{NONNEGINT:syslog5424_ver} +(?:%{TIMESTAMP_ISO8601:syslog5424_ts}|-) +(?:%{HOSTNAME:syslog5424_host}|-) +(?:%{NOTSPACE:syslog5424_app}|-) +(?:%{NOTSPACE:syslog5424_proc}|-) +(?:%{WORD:syslog5424_msgid}|-) +(?:%{SYSLOG5424SD:syslog5424_sd}|-|) +%{GREEDYDATA:syslog5424_msg}" }
+        }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "logstash-%{+YYYY.MM.dd}"
+      }
+    }
+  main.conf: |
     input {
       tcp {
         port => 5044
@@ -49,7 +71,7 @@ data:
               grok {
                 id => "rtr"
                 named_captures_only => true
-                match => { "msg" => "%{HOSTNAME} - \[%{TIMESTAMP_ISO8601}\] \"(?:%{WORD:web_verb} %{NOTSPACE:web_request}(?: HTTP/%{NUMBER:web_httpversion})?|%{DATA})\" %{NUMBER:web_response} %{NUMBER} %{NUMBER} %{QS} %{QS:web_agent} %{GREEDYDATA}" }
+                match => { "msg" => "%{HOSTNAME} - \[%{TIMESTAMP_ISO8601}\] \"(?:%{WORD:web_verb} %{NOTSPACE:web_request}(?: HTTP/%{NUMBER:web_httpversion})?|%{DATA})\" %{NUMBER:web_response} %{NUMBER} %{NUMBER:web_content_length} %{QS} %{QS:web_agent} %{GREEDYDATA}" }
                 remove_field => [ "msg" ]
               }
             } else {
