@@ -1,0 +1,21 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: index-cleaner-cron
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cleaner
+              image: maliksalman/jump
+              args:
+                - /bin/bash
+                - -c
+                - |
+                  export NEW_IDX_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+                  export JSON=$(jq -n '{ msg:"Trying to clean index", pretending:true, name:env.NEW_IDX_ID}' -c)
+                  curl -X POST -H "Content-Type: application/json" http://logstash:5046 -d "$JSON"

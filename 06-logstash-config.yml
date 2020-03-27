@@ -33,10 +33,21 @@ data:
       }
       beats {
         port => 5045
+        type => beats
+      }
+      http {
+        port => 5046
+        type => http
       }
     }
 
     filter {
+      if [type] == "http" {
+        mutate {
+          add_field => { "index_type" => "http" }
+          remove_field => [ "headers", "host", "type" ]
+        }
+      }
       if [type] == "syslog" {
         mutate { add_field => { "index_type" => "pcf" } }
         grok {
@@ -136,7 +147,7 @@ data:
           }
         }
         mutate {
-          remove_field => [ "fields", "app", "ecs", "agent", "tags", "message", "log", "host", "input" ]
+          remove_field => [ "fields", "app", "ecs", "agent", "tags", "message", "log", "host", "input", "type" ]
         }
       }
     }

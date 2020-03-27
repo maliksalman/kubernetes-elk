@@ -15,6 +15,10 @@ spec:
       protocol: TCP
       port: 5045
       nodePort: 30045
+    - name: http
+      protocol: TCP
+      port: 5046
+      nodePort: 30046
     - name: api
       protocol: TCP
       port: 9600

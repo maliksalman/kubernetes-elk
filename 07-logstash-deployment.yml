@@ -18,6 +18,12 @@ spec:
             - name: syslog
               protocol: TCP
               containerPort: 5044
+            - name: beats
+              protocol: TCP
+              containerPort: 5045
+            - name: http
+              protocol: TCP
+              containerPort: 5046
             - name: api
               protocol: TCP
               containerPort: 9600
